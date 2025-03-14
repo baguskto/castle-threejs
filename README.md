@@ -2,6 +2,8 @@
 
 A 3D castle viewer created with Blender and Three.js.
 
+![Medieval Castle](./images/castle-preview.png)
+
 ## Overview
 
 This project showcases a 3D castle model created in Blender and displayed on a web page using Three.js. The castle is inspired by a low-poly medieval castle design.
@@ -65,6 +67,16 @@ If you want to create your own castle:
 1. Use Blender to create and export your model as a GLB file
 2. Replace the `models/castle.glb` file with your own
 3. Refresh the web page to see your model
+
+## What's Next
+
+Coming soon:
+- Day/Night toggle for different lighting conditions
+- Enhanced details toggle for model complexity
+- Additional castle models and environments
+- Animation sequences for drawbridge and flags
+- Interactive elements within the castle
+- Mobile touch controls optimization
 
 ## License
 
