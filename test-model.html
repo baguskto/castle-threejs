@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Loading Test</title>
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; }
+        canvas { display: block; }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">Loading model...</div>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
+    
+    <script>
+        // DOM elements
+        const infoElement = document.getElementById('info');
+        
+        // Create scene
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87ceeb);
+        
+        // Create camera
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(3, 3, 3);
+        camera.lookAt(0, 0, 0);
+        
+        // Create renderer
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+        
+        // Add controls
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        
+        // Add lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
+        
+        // Add a placeholder cube
+        const placeholderGeometry = new THREE.BoxGeometry(1, 1, 1);
+        const placeholderMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+        const placeholder = new THREE.Mesh(placeholderGeometry, placeholderMaterial);
+        scene.add(placeholder);
+        
+        // Add a ground plane
+        const groundGeometry = new THREE.PlaneGeometry(10, 10);
+        const groundMaterial = new THREE.MeshBasicMaterial({ color: 0x999999 });
+        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -0.5;
+        scene.add(ground);
+        
+        // Load the model
+        infoElement.textContent = 'Loading test_cube.glb...';
+        console.log('Starting to load model...');
+        
+        const loader = new THREE.GLTFLoader();
+        loader.load(
+            'models/test_cube.glb',
+            function(gltf) {
+                console.log('Model loaded successfully!');
+                infoElement.textContent = 'Model loaded successfully!';
+                
+                const model = gltf.scene;
+                scene.add(model);
+                scene.remove(placeholder);
+            },
+            function(xhr) {
+                const percentComplete = (xhr.loaded / xhr.total) * 100;
+                console.log(`Loading progress: ${Math.round(percentComplete)}%`);
+                infoElement.textContent = `Loading: ${Math.round(percentComplete)}%`;
+            },
+            function(error) {
+                console.error('Error loading model:', error);
+                infoElement.textContent = 'Error loading model. Check console.';
+                
+                // Try loading a different model
+                infoElement.textContent += ' Trying simple_castle.glb...';
+                loader.load(
+                    'models/simple_castle.glb',
+                    function(gltf) {
+                        console.log('Simple castle loaded successfully!');
+                        infoElement.textContent = 'Simple castle loaded successfully!';
+                        
+                        const model = gltf.scene;
+                        scene.add(model);
+                        scene.remove(placeholder);
+                    },
+                    null,
+                    function(error) {
+                        console.error('Error loading simple castle:', error);
+                        infoElement.textContent = 'All model loading attempts failed.';
+                    }
+                );
+            }
+        );
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Rotate placeholder if it's still in the scene
+            if (placeholder.parent === scene) {
+                placeholder.rotation.x += 0.01;
+                placeholder.rotation.y += 0.01;
+            }
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html> 
