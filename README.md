@@ -2,7 +2,7 @@
 
 A 3D castle viewer created with Blender and Three.js.
 
-![Medieval Castle](./images/castle-preview.png)
+![Medieval Castle](./assets/images/castle.png)
 
 ## Overview
 
